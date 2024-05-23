@@ -1,0 +1,37 @@
+name: Tests Unitaires
+
+on: workflow_dispatch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout du code
+      uses: actions/checkout@v2
+
+    - name: Configuration de l'environnement Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Installation des dépendances
+      run: |
+        pip install pytest
+
+    - name: Exécution des tests
+      run: pytest
+    
+  create-pull-request:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: "master"
+          github_token: ${{ secrets.TOKEN }}
+          pr_label: "feature, automated pr"
+          pr_title: "[Example] Simple demo"
